@@ -204,11 +204,11 @@ export default function CartPage() {
                 </div>
 
                 {/* Controlli Quantità */}
-                <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1.5 border border-gray-200 self-start sm:self-center">
+                <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1 border border-gray-200 self-start sm:self-center">
                   <Button 
                     size="sm" 
-                    variant="ghost" 
-                    className="h-8 w-8 p-0 hover:bg-white hover:text-red-600 rounded-md"
+                    variant="outline" 
+                    className="h-8 w-8 p-0 hover:bg-white hover:text-red-600 hover:border-red-200 rounded-md border-gray-200 bg-transparent shadow-none"
                     onClick={() => updateQuantity(item.menuItemId, -1)} // ✅ Diminuisce
                   >
                     <Minus className="w-4 h-4" />
@@ -218,8 +218,8 @@ export default function CartPage() {
                   
                   <Button 
                     size="sm" 
-                    variant="ghost" 
-                    className="h-8 w-8 p-0 hover:bg-white hover:text-green-600 rounded-md"
+                    variant="outline" 
+                    className="h-8 w-8 p-0 hover:bg-white hover:text-green-600 hover:border-green-200 rounded-md border-gray-200 bg-transparent shadow-none"
                     onClick={() => updateQuantity(item.menuItemId, 1)} // ✅ Aumenta
                   >
                     <Plus className="w-4 h-4" />
@@ -227,14 +227,14 @@ export default function CartPage() {
                 </div>
 
                 {/* Totale Riga & Rimuovi */}
-                <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+                <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                   <p className="font-bold text-gray-900 min-w-[60px] text-right">
                     {((item.priceCents * item.quantity) / 100).toFixed(2)}€
                   </p>
                   <Button 
                     size="sm" 
-                    variant="ghost" 
-                    className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                    variant="outline" 
+                    className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50 hover:border-red-200 rounded-full border-transparent bg-transparent shadow-none"
                     onClick={() => removeItem(item.menuItemId)}
                   >
                     <Trash2 className="w-4 h-4" />
