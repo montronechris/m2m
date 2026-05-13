@@ -4,26 +4,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/stores/useCartStore";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Trash2, Plus, Minus, ArrowLeft, CheckCircle, AlertCircle, ShoppingCart } from "lucide-react";
-import Link from "next/link";
-
-const SUPABASE_URL = "https://ylzuyhmtzfqnoyqkwiqx.supabase.co";
-const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsenV5aG10emZxbm95cWt3aXF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MDMxNzEsImV4cCI6MjA5NDE3OTE3MX0.eNksInG0OeM_CHnWnCNfrHOy1oYHL6_QMHI0M-2VAkw";
+// ... altri import ...
 
 export default function CartPage() {
   const router = useRouter();
   
-  // ❌ NON usare 'getTotal' qui. Calcoliamo il totale localmente.
+  // Non estrarre getTotal qui, calcoliamo il totale localmente
   const { items, tableId, restaurantSlug, updateQuantity, removeItem, clearCart } = useCartStore();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // ✅ Calcolo totale sicuro e reattivo
+  // Calcolo totale sicuro e reattivo
   const totalCents = items.reduce((sum, item) => sum + (item.priceCents * item.quantity), 0);
+
+  // ... resto del codice ...
 
   const handleCheckout = async () => {
     if (items.length === 0) return;
