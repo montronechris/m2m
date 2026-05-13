@@ -34,7 +34,6 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Carica ordini da Supabase
   const fetchOrders = async () => {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*,items:order_items(menu_item_id, quantity, unit_price_cents)&order=created_at.desc`, {
@@ -57,12 +56,10 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders();
-    // Aggiornamento automatico ogni 10 secondi per simulare il "real-time"
     const interval = setInterval(fetchOrders, 10000);
     return () => clearInterval(interval);
   }, []);
 
-  // Aggiorna stato ordine su Supabase
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
@@ -76,13 +73,11 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({ status: newStatus })
       });
       if (!res.ok) throw new Error("Errore aggiornamento stato");
-      
-      // Aggiorna stato locale senza ricaricare tutto
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
     } catch (err: any) {
       console.error(err);
       alert("Errore nell'aggiornamento: " + err.message);
-      fetchOrders(); // Fallback: ricarica tutto in caso di errore
+      fetchOrders();
     }
   };
 
@@ -128,7 +123,6 @@ export default function AdminOrdersPage() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {orders.map((order) => (
           <Card key={order.id} className="border-0 shadow-sm hover:shadow-md transition-all duration-300 bg-white rounded-xl overflow-hidden">
-            {/* Barra colore stato */}
             <div className={`h-1.5 w-full ${
               order.status === 'pending' ? 'bg-yellow-400' :
               order.status === 'preparing' ? 'bg-blue-500' :
@@ -159,7 +153,6 @@ export default function AdminOrdersPage() {
             </CardHeader>
            
             <CardContent className="space-y-4">
-              {/* Lista piatti */}
               <div className="space-y-2 text-sm bg-gray-50 p-3 rounded-lg">
                 {order.items?.map((item, idx) => (
                   <div key={idx} className="flex justify-between border-b border-gray-200 last:border-0 pb-1 last:pb-0">
@@ -169,14 +162,12 @@ export default function AdminOrdersPage() {
                 ))}
               </div>
 
-              {/* Note ordine */}
               {order.notes && (
                 <div className="bg-orange-50 text-orange-800 text-xs p-2.5 rounded-lg border border-orange-100 flex gap-2">
                   <span>📝</span> <span className="break-words">{order.notes}</span>
                 </div>
               )}
 
-              {/* Totale + Cambio Stato */}
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div className="font-bold text-xl text-gray-900">
                   {(order.total_cents / 100).toFixed(2)}€
@@ -187,7 +178,7 @@ export default function AdminOrdersPage() {
                   className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 w-full p-2.5 outline-none cursor-pointer hover:border-gray-400 transition-colors"
                 >
                   <option value="pending">⏳ In attesa</option>
-                  <option value="preparing">👨‍🍳 Preparazione</option>
+                  <option value="preparing">👨‍ Preparazione</option>
                   <option value="ready">✅ Pronto</option>
                   <option value="served">🍽️ Servito</option>
                   <option value="cancelled">❌ Annullato</option>
