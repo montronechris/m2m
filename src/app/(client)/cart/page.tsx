@@ -15,14 +15,14 @@ const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 export default function CartPage() {
   const router = useRouter();
   
-  // Importiamo solo ciò che serve dallo store
+  // ❌ NON usare 'getTotal' qui. Calcoliamo il totale localmente.
   const { items, tableId, restaurantSlug, updateQuantity, removeItem, clearCart } = useCartStore();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Calcoliamo il totale direttamente qui (evita errori di tipo sullo store)
+  // ✅ Calcolo totale sicuro e reattivo
   const totalCents = items.reduce((sum, item) => sum + (item.priceCents * item.quantity), 0);
 
   const handleCheckout = async () => {
