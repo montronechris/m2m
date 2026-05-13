@@ -16,7 +16,7 @@ type CartState = {
   restaurantSlug: string | null;
   addItem: (item: CartItem) => void;
   removeItem: (menuItemId: string) => void;
-  updateQuantity: (menuItemId: string, delta: number) => void; // Delta può essere +1 o -1
+  updateQuantity: (menuItemId: string, delta: number) => void;
   clearCart: () => void;
   setContext: (tableId: string, restaurantSlug: string) => void;
 };
@@ -28,27 +28,22 @@ export const useCartStore = create<CartState>()(
       tableId: null,
       restaurantSlug: null,
 
-      // Getter per il totale calcolato dinamicamente
-      get totalCents() {
-        return get().items.reduce((sum, item) => sum + (item.priceCents * item.quantity), 0);
-      },
-
       setContext: (tableId, restaurantSlug) => set({ 
         tableId: String(tableId), 
         restaurantSlug: String(restaurantSlug) 
       }),
 
       addItem: (newItem) => set((state) => {
-        const existingIndex = state.items.findIndex(i => i.menuItemId === newItem.menuItemId);
-        
-        if (existingIndex >= 0) {
-          // Se esiste già, aumenta la quantità
-          const newItems = [...state.items];
-          newItems[existingIndex].quantity += newItem.quantity;
-          return { items: newItems };
+        const existing = state.items.find(i => i.menuItemId === newItem.menuItemId);
+        if (existing) {
+          return {
+            items: state.items.map(i => 
+              i.menuItemId === newItem.menuItemId 
+                ? { ...i, quantity: i.quantity + newItem.quantity } 
+                : i
+            )
+          };
         }
-        
-        // Altrimenti aggiungi nuovo
         return { items: [...state.items, newItem] };
       }),
 
@@ -56,24 +51,21 @@ export const useCartStore = create<CartState>()(
         items: state.items.filter(i => i.menuItemId !== menuItemId)
       })),
 
-      updateQuantity: (menuItemId, delta) => set((state) => {
-        return {
-          items: state.items.map(item => {
-            if (item.menuItemId === menuItemId) {
-              // Calcola nuova quantità, minimo 1
-              const newQty = Math.max(1, item.quantity + delta);
-              return { ...item, quantity: newQty };
-            }
-            return item;
-          })
-        };
-      }),
+      updateQuantity: (menuItemId, delta) => set((state) => ({
+        items: state.items.map(item => {
+          if (item.menuItemId === menuItemId) {
+            const newQty = Math.max(1, item.quantity + delta);
+            return { ...item, quantity: newQty };
+          }
+          return item;
+        })
+      })),
 
       clearCart: () => set({ items: [] }),
     }),
     {
-      name: 'tavolarapida-cart-v2', // Cambiato nome versione per pulire cache vecchia
-      partialize: (state) => ({ items: state.items }), // Salva solo gli items
+      name: 'tavolarapida-cart-v2', // Nome univoco per evitare conflitti cache
+      partialize: (state) => ({ items: state.items }),
     }
   )
 );
