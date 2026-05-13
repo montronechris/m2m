@@ -3,104 +3,26 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCartStore } from "@/stores/useCartStore";
+import { useCartStore } from "@/stores/useCartStore"; // ✅ Import corretto
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Plus, Minus, ArrowLeft, CheckCircle, AlertCircle, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-// src/stores/useCartStore.ts
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
-type CartItem = {
-  menuItemId: string;
-  name: string;
-  priceCents: number;
-  quantity: number;
-  customizations?: any;
-};
-
-type CartState = {
-  items: CartItem[];
-  tableId: string | null;
-  restaurantSlug: string | null;
-  addItem: (item: CartItem) => void;
-  removeItem: (menuItemId: string) => void;
-  updateQuantity: (menuItemId: string, delta: number) => void;
-  clearCart: () => void;
-  setContext: (tableId: string, restaurantSlug: string) => void;
-  getTotal: () => number; // <--- Aggiungi questo
-};
-
-export const useCartStore = create<CartState>()(
-  persist(
-    (set, get) => ({
-      items: [],
-      tableId: null,
-      restaurantSlug: null,
-
-      // Implementazione di getTotal
-      getTotal: () => {
-        return get().items.reduce((sum, item) => sum + (item.priceCents * item.quantity), 0);
-      },
-
-      // ... resto delle funzioni (addItem, removeItem, ecc.) ...
-      
-      setContext: (tableId, restaurantSlug) => set({ 
-        tableId: String(tableId), 
-        restaurantSlug: String(restaurantSlug) 
-      }),
-
-      addItem: (newItem) => set((state) => {
-        const existing = state.items.find(i => i.menuItemId === newItem.menuItemId);
-        if (existing) {
-          return {
-            items: state.items.map(i => 
-              i.menuItemId === newItem.menuItemId 
-                ? { ...i, quantity: i.quantity + newItem.quantity } 
-                : i
-            )
-          };
-        }
-        return { items: [...state.items, newItem] };
-      }),
-
-      removeItem: (menuItemId) => set((state) => ({
-        items: state.items.filter(i => i.menuItemId !== menuItemId)
-      })),
-
-      updateQuantity: (menuItemId, delta) => set((state) => ({
-        items: state.items.map(item => {
-          if (item.menuItemId === menuItemId) {
-            const newQty = Math.max(1, item.quantity + delta);
-            return { ...item, quantity: newQty };
-          }
-          return item;
-        })
-      })),
-
-      clearCart: () => set({ items: [] }),
-    }),
-    {
-      name: 'tavolarapida-cart',
-      partialize: (state) => ({ items: state.items }),
-    }
-  )
-);
-
-// Costanti Supabase (stesse del menu)
+// Costanti Supabase
 const SUPABASE_URL = "https://ylzuyhmtzfqnoyqkwiqx.supabase.co";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsenV5aG10emZxbm95cWt3aXF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MDMxNzEsImV4cCI6MjA5NDE3OTE3MX0.eNksInG0OeM_CHnWnCNfrHOy1oYHL6_QMHI0M-2VAkw";
 
 export default function CartPage() {
   const router = useRouter();
+  // Usa lo store importato
   const { items, tableId, restaurantSlug, updateQuantity, removeItem, clearCart } = useCartStore();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Calcolo totale sicuro e reattivo
+  // Calcola il totale direttamente qui (più semplice e reattivo)
   const totalCents = items.reduce((sum, item) => sum + (item.priceCents * item.quantity), 0);
 
   const handleCheckout = async () => {
@@ -128,7 +50,7 @@ export default function CartPage() {
       if (restaurants.length === 0) throw new Error("Ristorante non trovato");
       const restaurantId = restaurants[0].id;
 
-      // 2️ Trova ID Tavolo (UUID) dal numero
+      // 2️⃣ Trova ID Tavolo (UUID) dal numero
       const tableRes = await fetch(`${SUPABASE_URL}/rest/v1/tables?restaurant_id=eq.${restaurantId}&table_number=eq.${tableId}&is_active=eq.true`, {
         headers: {
           'apikey': API_KEY,
@@ -142,7 +64,7 @@ export default function CartPage() {
       if (tables.length === 0) throw new Error(`Tavolo n. ${tableId} non disponibile per questo ristorante`);
       const actualTableId = tables[0].id;
 
-      // 3️ Crea Ordine
+      // 3️⃣ Crea Ordine
       const orderPayload = {
         table_id: actualTableId,
         restaurant_id: restaurantId,
@@ -244,7 +166,7 @@ export default function CartPage() {
     );
   }
 
-  //  Stato: Carrello Pieno
+  // 🔵 Stato: Carrello Pieno
   return (
     <div className="min-h-screen bg-[#f8fafc] py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -288,7 +210,7 @@ export default function CartPage() {
                     size="sm" 
                     variant="outline" 
                     className="h-8 w-8 p-0 hover:bg-white hover:text-red-600 hover:border-red-200 rounded-md border-gray-200 bg-transparent shadow-none"
-                    onClick={() => updateQuantity(item.menuItemId, -1)} // ✅ Diminuisce
+                    onClick={() => updateQuantity(item.menuItemId, -1)}
                   >
                     <Minus className="w-4 h-4" />
                   </Button>
@@ -299,7 +221,7 @@ export default function CartPage() {
                     size="sm" 
                     variant="outline" 
                     className="h-8 w-8 p-0 hover:bg-white hover:text-green-600 hover:border-green-200 rounded-md border-gray-200 bg-transparent shadow-none"
-                    onClick={() => updateQuantity(item.menuItemId, 1)} // ✅ Aumenta
+                    onClick={() => updateQuantity(item.menuItemId, 1)}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
