@@ -1,0 +1,1 @@
+export default function MenuAdminPage() { return <div className="p-4"><h1 className="text-2xl font-bold">🍽️ Gestione Menu</h1><p className="mt-4 text-gray-500">CRUD in arrivo dopo il setup DB.</p></div>; }
