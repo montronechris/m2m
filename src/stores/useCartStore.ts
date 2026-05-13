@@ -19,6 +19,8 @@ type CartState = {
   updateQuantity: (menuItemId: string, delta: number) => void;
   clearCart: () => void;
   setContext: (tableId: string, restaurantSlug: string) => void;
+  // Aggiungi getTotal qui se vuoi usarlo
+  getTotal: () => number; 
 };
 
 export const useCartStore = create<CartState>()(
@@ -27,6 +29,11 @@ export const useCartStore = create<CartState>()(
       items: [],
       tableId: null,
       restaurantSlug: null,
+
+      // Implementazione di getTotal
+      getTotal: () => {
+        return get().items.reduce((sum, item) => sum + (item.priceCents * item.quantity), 0);
+      },
 
       setContext: (tableId, restaurantSlug) => set({ 
         tableId: String(tableId), 
@@ -64,7 +71,7 @@ export const useCartStore = create<CartState>()(
       clearCart: () => set({ items: [] }),
     }),
     {
-      name: 'tavolarapida-cart-v2', // Nome univoco per evitare conflitti cache
+      name: 'tavolarapida-cart-v2',
       partialize: (state) => ({ items: state.items }),
     }
   )
