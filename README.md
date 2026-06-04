@@ -116,50 +116,62 @@ npm install
 cp .env.example .env.local
 npm run dev
 Requisiti
-Node.js 20+
+Node.js 20 o superiore
 Account Supabase attivo
 🔐 Configurazione
 
+Per avviare correttamente il progetto è necessario configurare le variabili d’ambiente.
+
 Nel file .env.local inserire:
 
-URL progetto Supabase
-API Key pubblica
-API Key privata
-Configurazione Auth e Realtime
+URL del progetto Supabase
+API Key pubblica (anon key)
+API Key privata (service role, se richiesta)
+Configurazione autenticazione (Auth)
+Abilitazione Realtime database
+
+💡 Queste variabili permettono la connessione tra frontend e backend Supabase (database, autenticazione e sincronizzazione in tempo reale).
+
 🧠 Scelte Progettuali
 
-Questo progetto è stato sviluppato seguendo principi di:
+Il progetto è stato sviluppato seguendo principi di ingegneria del software moderna:
 
-Separazione delle responsabilità
-Architettura scalabile a componenti
-Minimizzazione dei refresh (UX realtime)
-Gestione stato locale vs globale
-Sicurezza lato server (Server Actions)
+Separazione delle responsabilità tra UI, logica e servizi
+Architettura scalabile a componenti, facilmente estendibile
+Aggiornamenti realtime per ridurre al minimo i refresh della pagina
+Gestione dello stato ibrida, tra stato locale (Zustand) e backend (Supabase)
+Sicurezza lato server tramite Server Actions e controllo accessi
+
+💡 L’obiettivo è simulare un sistema reale utilizzabile in un contesto professionale.
+
 🎓 Competenze Dimostrate
 
-Questo progetto dimostra competenze in:
+Questo progetto evidenzia competenze concrete nello sviluppo software full-stack:
 
-Sviluppo full-stack moderno
-Integrazione database realtime
-Architetture event-driven
-UI/UX per applicazioni reali
-Gestione autenticazione e ruoli
-Progettazione software scalabile
+Sviluppo di applicazioni web moderne end-to-end
+Integrazione di database realtime e sistemi event-driven
+Progettazione di architetture scalabili e modulari
+Sviluppo di interfacce UI/UX orientate all’utilizzo reale
+Gestione di autenticazione, ruoli e permessi
+Strutturazione di codice mantenibile e professionale
 📈 Possibili Evoluzioni
-Sistema di pagamento integrato
-Stampante fiscale / termica
-Analytics avanzate (vendite, piatti più ordinati)
-Modalità offline (PWA)
-Ottimizzazione AI per suggerimenti menu
-Sistema magazzino ingredienti
+
+Il progetto è pensato come base estendibile. Possibili sviluppi futuri includono:
+
+Integrazione di sistemi di pagamento digitali
+Supporto a stampanti fiscali e termiche
+Dashboard avanzate con analytics e KPI
+Modalità offline tramite PWA
+Integrazione di AI per suggerimenti menu intelligenti
+Sistema completo di gestione magazzino e ingredienti
 🧾 Nota finale
 
-Progetto sviluppato come capolavoro finale del percorso scolastico, con focus su:
+Questo progetto è stato sviluppato come capolavoro finale del percorso scolastico, con l’obiettivo di dimostrare capacità avanzate in:
 
-applicazione reale
-architettura moderna
-esperienza utente professionale
-tecnologie full-stack attuali
+sviluppo di applicazioni reali
+progettazione di architetture moderne
+utilizzo di tecnologie full-stack attuali
+attenzione all’esperienza utente e alle performance
 
 Autore: [Il Tuo Nome]
 Anno: 2026
