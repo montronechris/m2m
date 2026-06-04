@@ -94,19 +94,45 @@ Il sistema è progettato con approccio **mobile-first**, ottimizzato per:
 
 ---
 
-## 📸 Interfaccia
+## 📸 Screenshots
 
-### Home Page
+### 🏠 Home Page
 ![Home Page](screenshots/HomePage.png)
 
-### Mappa Tavoli
-![Mappa Tavoli](screenshots/mappa-tavoli.png)
+---
 
-### Gestione Ordine
-![Ordine](screenshots/ordine-in-corso.png)
+### 🔐 Admin Login
+![Admin Login](screenshots/Admin%20LoginPage.png)
 
-### Dashboard Admin
-![Admin](screenshots/dashboard-admin.png)
+---
+
+### 👨‍🍳 Staff Login
+![Staff Login](screenshots/Staff%20LoginPage.png)
+
+---
+
+### 📊 Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+---
+
+### 🍽️ Menu
+![Menu](screenshots/Menu.png)
+
+---
+
+### 🛒 Carrello Ordini
+![Cart](screenshots/cart.png)
+
+---
+
+### 📦 Gestione Ordini
+![Order](screenshots/order.png)
+
+---
+
+### 👨‍🍳 Kitchen View
+![Kitchen](screenshots/kitchen.png)
 
 ---
 
