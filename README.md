@@ -7,17 +7,22 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase)
 ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
 
-📌 Descrizione progetto (UNICA)
+---
+
 ## 📌 Descrizione progetto
 Il progetto permette di creare un sistema di comunicazione tra servizi indipendenti, simulando un’architettura a microservizi semplificata.
 
 Ogni modulo può inviare e ricevere dati in tempo reale attraverso un sistema centralizzato, permettendo lo scambio di informazioni tra componenti diversi del sistema.
-🎯 Obiettivo del progetto
+
+---
+
 ## 🎯 Obiettivo del progetto
 L’obiettivo del progetto è realizzare una piattaforma modulare e scalabile che permetta la comunicazione tra più servizi in tempo reale, utilizzando tecnologie moderne come Node.js e Supabase.
 
 Il progetto mira a simulare un’infrastruttura backend reale, utile per comprendere il funzionamento dei sistemi distribuiti.
-⚠️ Problema che risolve
+
+---
+
 ## ⚠️ Problema che risolve
 Molti sistemi moderni hanno difficoltà a far comunicare tra loro diversi servizi in modo semplice e veloce.
 
