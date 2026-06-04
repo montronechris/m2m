@@ -221,5 +221,5 @@ Questo progetto è stato sviluppato come capolavoro finale del percorso scolasti
 
 ---
 
-**Autore:** Montrone Christian\n
+**Autore:** Montrone Christian  
 **Anno:** 2026
