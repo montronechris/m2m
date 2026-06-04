@@ -147,63 +147,79 @@ npm install
 cp .env.example .env.local
 npm run dev
 ```
-📌 Requisiti
-Node.js 20 o superiore
-Account Supabase attivo
-🔐 Configurazione
+## 📌 Requisiti
+
+- Node.js 20 o superiore  
+- Account Supabase attivo  
+
+---
+
+## 🔐 Configurazione
 
 Per avviare correttamente il progetto è necessario configurare le variabili d’ambiente.
 
-Nel file .env.local inserire:
+Nel file `.env.local` inserire:
 
-URL del progetto Supabase
-API Key pubblica (anon key)
-API Key privata (service role, se richiesta)
-Configurazione autenticazione (Auth)
-Abilitazione Realtime database
+- URL del progetto Supabase  
+- API Key pubblica (anon key)  
+- API Key privata (service role, se richiesta)  
+- Configurazione autenticazione (Auth)  
+- Abilitazione Realtime database  
 
 💡 Queste variabili permettono la connessione tra frontend e backend Supabase (database, autenticazione e sincronizzazione in tempo reale).
 
-🧠 Scelte Progettuali
+---
+
+## 🧠 Scelte Progettuali
 
 Il progetto è stato sviluppato seguendo principi di ingegneria del software moderna:
 
-Separazione delle responsabilità tra UI, logica e servizi
-Architettura scalabile a componenti, facilmente estendibile
-Aggiornamenti realtime per ridurre al minimo i refresh della pagina
-Gestione dello stato ibrida tra stato locale (Zustand) e backend (Supabase)
-Sicurezza lato server tramite Server Actions e controllo accessi
+- Separazione delle responsabilità tra UI, logica e servizi  
+- Architettura scalabile a componenti, facilmente estendibile  
+- Aggiornamenti realtime per ridurre al minimo i refresh della pagina  
+- Gestione dello stato ibrida tra stato locale (Zustand) e backend (Supabase)  
+- Sicurezza lato server tramite Server Actions e controllo accessi  
 
 💡 L’obiettivo è simulare un sistema reale utilizzabile in un contesto professionale.
 
-🎓 Competenze Dimostrate
+---
+
+## 🎓 Competenze Dimostrate
 
 Questo progetto evidenzia competenze concrete nello sviluppo software full-stack:
 
-Sviluppo di applicazioni web moderne end-to-end
-Integrazione di database realtime e sistemi event-driven
-Progettazione di architetture scalabili e modulari
-Sviluppo di interfacce UI/UX orientate all’utilizzo reale
-Gestione di autenticazione, ruoli e permessi
-Strutturazione di codice mantenibile e professionale
-📈 Possibili Evoluzioni
+- Sviluppo di applicazioni web moderne end-to-end  
+- Integrazione di database realtime e sistemi event-driven  
+- Progettazione di architetture scalabili e modulari  
+- Sviluppo di interfacce UI/UX orientate all’utilizzo reale  
+- Gestione di autenticazione, ruoli e permessi  
+- Strutturazione di codice mantenibile e professionale  
+
+---
+
+## 📈 Possibili Evoluzioni
 
 Il progetto è pensato come base estendibile. Possibili sviluppi futuri includono:
 
-Integrazione di sistemi di pagamento digitali
-Supporto a stampanti fiscali e termiche
-Dashboard avanzate con analytics e KPI
-Modalità offline tramite PWA
-Integrazione di AI per suggerimenti menu intelligenti
-Sistema completo di gestione magazzino e ingredienti
-🧾 Nota finale
+- Integrazione di sistemi di pagamento digitali  
+- Supporto a stampanti fiscali e termiche  
+- Dashboard avanzate con analytics e KPI  
+- Modalità offline tramite PWA  
+- Integrazione di AI per suggerimenti menu intelligenti  
+- Sistema completo di gestione magazzino e ingredienti  
+
+---
+
+## 🧾 Nota finale
 
 Questo progetto è stato sviluppato come capolavoro finale del percorso scolastico, con l’obiettivo di dimostrare capacità avanzate in:
 
-sviluppo di applicazioni reali
-progettazione di architetture moderne
-utilizzo di tecnologie full-stack attuali
-attenzione all’esperienza utente e alle performance
+- sviluppo di applicazioni reali  
+- progettazione di architetture moderne  
+- utilizzo di tecnologie full-stack attuali  
+- attenzione all’esperienza utente e alle performance  
 
-Autore: [Il Tuo Nome]
-Anno: 2026
+---
+
+**Autore:** [Il Tuo Nome]  
+**Anno:** 2026
