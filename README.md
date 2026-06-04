@@ -1,169 +1,136 @@
-# M2M - Modern Management (Ristorante)
+M2M - Modern Management (Ristorante)
 
-**Un sistema moderno, veloce e realtime per la gestione di tavoli e ordini nei ristoranti.**
+Sistema full-stack realtime per la gestione digitale di ristoranti moderni
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase)
-![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
+M2M Modern Management
 
----
 
-## 🎯 Descrizione del Progetto
 
-**M2M** è un’applicazione web completa progettata per rivoluzionare la gestione operativa dei ristoranti. Sostituisce i tradizionali sistemi cartacei o software obsoleti con un’interfaccia moderna, intuitiva e in tempo reale.
 
-Il sistema permette a camerieri e gestori di gestire tavoli, prendere ordini, monitorare lo stato della sala e visualizzare dati in tempo reale, tutto da tablet o smartphone.
 
----
 
-## ✨ Funzionalità Principali
 
-### Per lo Staff (Camerieri)
-- Visualizzazione mappa interattiva dei tavoli
-- Apertura/chiusura tavolo con un click
-- Gestione ordini in tempo reale (aggiunta, modifica, note)
-- Carrello intelligente con Zustand
-- Visualizzazione ordini in corso del tavolo
-- Aggiornamenti live (Supabase Realtime)
 
-### Per l’Amministratore
-- Gestione completa del menu
-- Creazione e gestione utenti (admin / camerieri)
-- Dashboard con panoramica della sala
-- Gestione tavoli e categorie
-- Monitoraggio ordini in tempo reale
-- Statistiche di base
+🎯 Overview del Progetto
 
-### Funzionalità Tecniche
-- Autenticazione sicura con Supabase Auth
-- Architettura modulare e scalabile
-- Design responsive (mobile-first)
-- Realtime su tutti i dispositivi collegati
-- Server Actions di Next.js per prestazioni ottimali
+M2M è una piattaforma web progettata per digitalizzare e ottimizzare la gestione operativa di un ristorante, sostituendo processi manuali (carta, comande tradizionali) con un sistema centralizzato, realtime e multi-dispositivo.
 
----
+Il sistema permette la gestione simultanea di tavoli, ordini e sala, sincronizzando ogni modifica in tempo reale tra camerieri e amministratori.
 
-## 🛠️ Stack Tecnologico
+L’obiettivo non è solo la gestione, ma la simulazione di un ambiente reale di ristorazione con logiche di comunicazione event-driven.
 
-| Tecnologia          | Versione        | Utilizzo                             |
-|---------------------|-----------------|--------------------------------------|
-| **Next.js**         | 16 (App Router) | Framework principale                 |
-| **TypeScript**      | —               | Type safety                          |
-| **Tailwind CSS**    | —               | Styling                              |
-| **Supabase**        | —               | Auth, Database, Realtime, Storage    |
-| **Zustand**         | —               | State management (carrello, tavolo)  |
-| **Zod**             | —               | Validazione                          |
-| **Lucide React**    | —               | Icone                                |
+⚙️ Architettura del Sistema
 
----
+Il progetto è basato su un’architettura full-stack moderna event-driven:
 
-## 📸 Screenshots
+Frontend Next.js (App Router) → interfaccia operativa per staff e admin
+Backend Supabase → database + autenticazione + realtime
+State Layer (Zustand) → gestione locale del carrello e tavoli
+Server Actions → operazioni sicure lato server
+Realtime Engine → sincronizzazione immediata tra dispositivi
 
-### Mappa dei Tavoli
-![Mappa dei Tavoli](screenshots/mappa-tavoli.png)
+💡 Ogni azione (ordine, apertura tavolo, modifica menu) viene propagata in tempo reale a tutti i client connessi.
 
-### Prendere un Ordine
-![Prendere Ordine](screenshots/ordine-in-corso.png)
+✨ Funzionalità
+👨‍🍳 Area Camerieri
+Mappa interattiva della sala con stato tavoli
+Apertura e gestione tavolo in tempo reale
+Creazione ordini con sistema a carrello
+Aggiunta note personalizzate per ogni piatto
+Aggiornamenti live senza refresh pagina
+👨‍💼 Area Amministratore
+Gestione completa del menu (categorie e piatti)
+Gestione utenti con ruoli (admin / staff)
+Monitoraggio ordini attivi e completati
+Dashboard con panoramica operativa
+Controllo stato tavoli in tempo reale
+⚡ Funzionalità Tecniche
+Autenticazione sicura con Supabase Auth
+Aggiornamenti realtime multi-dispositivo
+UI responsive ottimizzata per tablet e mobile
+Validazione dati con Zod
+Architettura modulare e scalabile
+🧠 Tecnologie Utilizzate
+Tecnologia	Ruolo nel progetto
+Next.js 16	Frontend + backend (App Router)
+TypeScript	Tipizzazione e robustezza
+Supabase	Database, auth e realtime
+Tailwind CSS	UI moderna e responsive
+Zustand	Gestione stato locale
+Zod	Validazione dati
+Lucide React	Iconografia UI
+🧩 Modello Dati (semplificato)
+profiles → utenti e ruoli sistema
+tables → tavoli del ristorante
+orders → ordini attivi e storici
+order_items → singoli elementi ordine
+menu_categories → categorie menu
+menu_items → piatti e prezzi
+🖥️ UI & UX
 
-### Dashboard Amministratore
-![Dashboard Admin](screenshots/dashboard-admin.png)
+Il sistema è progettato con approccio mobile-first, ottimizzato per:
 
-### Versione Mobile (Tablet/Cameriere)
-![Mobile View](screenshots/mobile-view.png)
+Tablet per camerieri
+Desktop per amministrazione
+Interazioni rapide (zero reload)
+Feedback visivo immediato
+📸 Interfaccia
+Mappa Tavoli
 
-### Chiusura Conto
-![Chiusura Conto](screenshots/chiusura-conto.png)
+Gestione Ordine
 
-## 🚀 Installazione e Avvio
+Dashboard Admin
 
-### Prerequisiti
-- Node.js 20+
-- Account Supabase
-
-### Passaggi
-
-```bash
-# Clona il repository
+🚀 Installazione
 git clone https://github.com/montronechris/m2m.git
 cd m2m
-
-# Installa le dipendenze
 npm install
-
-# Configura le variabili d'ambiente
 cp .env.example .env.local
-```
-
-Poi configura il tuo progetto Supabase e inserisci le credenziali nel file `.env.local`.
-
-```bash
-# Avvia il server di sviluppo
 npm run dev
-```
+Requisiti
+Node.js 20+
+Account Supabase attivo
+🔐 Configurazione
 
----
+Nel file .env.local:
 
-## 🗄️ Struttura del Database (Supabase)
+URL progetto Supabase
+API Keys
+Configurazione Auth + Realtime
+🧠 Scelte Progettuali
 
-- `profiles` → Utenti (ruoli: admin / staff)
-- `tables` → Tavoli del ristorante
-- `orders` → Ordini
-- `order_items` → Singoli piatti negli ordini
-- `menu_categories` e `menu_items` → Menu
+Questo progetto è stato sviluppato seguendo principi di:
 
----
+Separazione delle responsabilità
+Architettura scalabile a componenti
+Minimizzazione dei refresh (UX realtime)
+Gestione stato locale vs globale
+Sicurezza lato server (Server Actions)
+🎓 Competenze Dimostrate
 
-## 🧠 Architettura e Scelte Progettuali
+Questo progetto dimostra competenze in:
 
-- **App Router** di Next.js 16 per routing ottimizzato
-- **Server Actions** per operazioni sicure lato server
-- **Zustand** per uno stato locale reattivo e performante
-- **Supabase Realtime** per sincronizzazione live tra più dispositivi
-- Separazione chiara tra logica di business (`lib/services/`) e componenti UI
-- TypeScript strict mode per robustezza
+Sviluppo full-stack moderno
+Integrazione database realtime
+Architetture event-driven
+UI/UX per applicazioni operative reali
+Gestione autenticazione e ruoli
+Progettazione software scalabile
+📈 Possibili Evoluzioni
+Sistema di pagamento integrato
+Stampante fiscale / termica
+Analytics avanzate (vendite, piatti più ordinati)
+Modalità offline (PWA)
+Ottimizzazione AI per suggerimenti menu
+Sistema magazzino ingredienti
+🧾 Nota finale
 
----
+Progetto sviluppato come capolavoro finale del percorso scolastico, con focus su:
 
-## 🎓 Finalità Didattica / Progetto d’Esame
+applicazione reale
+architettura moderna
+esperienza utente professionale
+tecnologie full-stack attuali
 
-Questo progetto è stato sviluppato come **capolavoro conclusivo** del percorso di studi, con l’obiettivo di dimostrare competenze avanzate in:
-
-- Sviluppo full-stack moderno
-- Architetture realtime
-- Gestione dello stato e performance
-- UX/UI orientata al mondo reale
-- Sicurezza e gestione ruoli
-
----
-
-## 📌 Prossimi Sviluppi (Roadmap)
-
-- Integrazione stampante termica
-- Statistiche avanzate e grafici
-- Sistema di pagamenti digitali
-- Gestione magazzino e ingredienti
-- Modalità offline (PWA)
-- Dark mode completa
-
----
-
-**Progetto realizzato con passione da [Il Tuo Nome]**
-
----
-
-*Grazie per aver valutato questo progetto.*
-*Sono disponibile per demo dal vivo o approfondimenti tecnici.*
-
-```
-
----
-
-### Consiglio per la consegna:
-
-1. **Sostituisci** `[Il Tuo Nome]` con il tuo nome
-2. Aggiungi **screenshots reali** (molto importanti per l’impatto)
-3. Aggiungi un **video demo** di 1-2 minuti e metti il link in cima
-4. Usa una bella immagine di copertina (opzionale)
-
-Vuoi che aggiunga anche una sezione **"Cosa ho imparato"** o una più tecnica per la commissione? Posso raffinarla ulteriormente.
+Autore: [Il Tuo Nome]
+Anno: 2026
