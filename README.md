@@ -1,6 +1,3 @@
-**Ecco un README.md professionale, curato e di alto livello**, perfetto da presentare alla commissione d’esame e da pubblicare come capolavoro.
-
-```markdown
 # M2M - Modern Management (Ristorante)
 
 **Un sistema moderno, veloce e realtime per la gestione di tavoli e ordini nei ristoranti.**
