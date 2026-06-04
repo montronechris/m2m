@@ -96,6 +96,9 @@ Il sistema è progettato con approccio **mobile-first**, ottimizzato per:
 
 ## 📸 Interfaccia
 
+### Home Page
+![Home Page](screenshots/HomePage.png)
+
 ### Mappa Tavoli
 ![Mappa Tavoli](screenshots/mappa-tavoli.png)
 
@@ -115,7 +118,7 @@ cd m2m
 npm install
 cp .env.example .env.local
 npm run dev
-Requisiti
+📌 Requisiti
 Node.js 20 o superiore
 Account Supabase attivo
 🔐 Configurazione
@@ -139,7 +142,7 @@ Il progetto è stato sviluppato seguendo principi di ingegneria del software mod
 Separazione delle responsabilità tra UI, logica e servizi
 Architettura scalabile a componenti, facilmente estendibile
 Aggiornamenti realtime per ridurre al minimo i refresh della pagina
-Gestione dello stato ibrida, tra stato locale (Zustand) e backend (Supabase)
+Gestione dello stato ibrida tra stato locale (Zustand) e backend (Supabase)
 Sicurezza lato server tramite Server Actions e controllo accessi
 
 💡 L’obiettivo è simulare un sistema reale utilizzabile in un contesto professionale.
