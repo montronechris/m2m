@@ -140,10 +140,13 @@ Il sistema è progettato con approccio **mobile-first**, ottimizzato per:
 
 ```bash
 git clone https://github.com/montronechris/m2m.git
+```
+```bash
 cd m2m
 npm install
 cp .env.example .env.local
 npm run dev
+```
 📌 Requisiti
 Node.js 20 o superiore
 Account Supabase attivo
