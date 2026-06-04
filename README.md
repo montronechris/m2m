@@ -60,9 +60,20 @@ Il sistema permette a camerieri e gestori di gestire tavoli, prendere ordini, mo
 
 ## 📸 Screenshots
 
-*(Inserisci qui 4-6 screenshot belli: mappa tavoli, ordine in corso, dashboard admin, mobile view)*
+### Mappa dei Tavoli
+![Mappa dei Tavoli](screenshots/mappa-tavoli.png)
 
----
+### Prendere un Ordine
+![Prendere Ordine](screenshots/ordine-in-corso.png)
+
+### Dashboard Amministratore
+![Dashboard Admin](screenshots/dashboard-admin.png)
+
+### Versione Mobile (Tablet/Cameriere)
+![Mobile View](screenshots/mobile-view.png)
+
+### Chiusura Conto
+![Chiusura Conto](screenshots/chiusura-conto.png)
 
 ## 🚀 Installazione e Avvio
 
