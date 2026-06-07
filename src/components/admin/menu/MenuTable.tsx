@@ -2,6 +2,14 @@
 import { Edit, Trash2 } from 'lucide-react'
 import type { MenuItem, MenuCategory } from '@/types'
 
+function TableLoader() {
+  return (
+    <div className="flex items-center justify-center py-16">
+      <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+    </div>
+  )
+}
+
 interface MenuTableProps {
   items: MenuItem[]
   categories: MenuCategory[]
@@ -30,7 +38,7 @@ export function MenuTable({ items, categories, selectedFilter, onFilterChange, o
           {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>
-      
+
       {/* Tabella */}
       <table className="w-full">
         {/* ... rendering righe ... */}

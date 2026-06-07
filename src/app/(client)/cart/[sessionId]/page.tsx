@@ -89,7 +89,7 @@ export default function CartPage() {
     if (!storeLoading && orderId === null && items.length === 0) {
       const slug = session.restaurantSlug || "";
       const table = session.tableNumber || "";
-      router.replace(`/order/${sessionId}?slug=${slug}&table=${table}`);
+      router.replace(`/order/${sessionId}`);
     }
   }, [sessionLoaded, storeLoading, orderId, items.length, session, router]);
 
@@ -252,16 +252,18 @@ export default function CartPage() {
           }),
         }
       );
-      if (!patchRes.ok) {
-        const errText = await patchRes.text();
-        throw new Error(`Errore conferma ordine: ${errText}`);
-      }
+    if (!patchRes.ok) {
+      const errText = await patchRes.text();
+      console.error("PATCH failed:", patchRes.status, errText);
+      throw new Error(`Errore conferma ordine: ${errText}`);
+    }
+    console.log("activeOrderId:", activeOrderId, "totalCents:", totalCents, "items:", items.length);
 
       setSuccess(true);
       clearCart();
       // Reset orderId così il prossimo ordine creerà un nuovo record nel DB
       useCartStore.setState({ orderId: null });
-      setTimeout(() => router.push(`/order/${currentSessionId}?slug=${session?.restaurantSlug || ""}`), 2500);
+      setTimeout(() => router.push(`/status/${currentSessionId}`), 2500);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Errore durante l'invio.";
       console.error("Checkout fallito:", err);
@@ -507,6 +509,7 @@ export default function CartPage() {
       <CustomizationModal
         isOpen={showCustomization}
         options={itemOptions}
+        itemName={customizingItem?.name ?? ""}
         onClose={() => {
           setShowCustomization(false);
           setCustomizingItem(null);

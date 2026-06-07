@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, Mail, Lock, Building, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
-import { registerTitolare } from "@/lib/auth-service";
+import { registerAdmin, registerTitolare } from "@/lib/auth-service";
 
 export default function RegisterTitolarePage() {
   const router = useRouter();

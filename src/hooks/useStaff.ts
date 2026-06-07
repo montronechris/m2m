@@ -51,7 +51,8 @@ export function useStaff(): UseStaffReturn {
         const data = await getRestaurantByUser();
 
         // Titolare → redirect a dashboard
-        if (data.userRole === "titolare") {
+        if ((data.userRole as string) === "titolare") {
+
           router.push("/admin/dashboard");
           return;
         }

@@ -7,8 +7,8 @@ import { getTableSession } from "@/lib/table-session";
 import {
   getRestaurantBySlug,
   getTableByToken,
-  createOrder,
-  createOrderItems,
+  getOrCreatePendingOrder,
+  addItemToOrder,
 } from "@/lib/api-service";
 
 type CheckoutStatus = "idle" | "submitting" | "success" | "error";
@@ -19,9 +19,8 @@ export function useCheckout() {
   const [status, setStatus] = useState<CheckoutStatus>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  // Calcolo totale con fallback sicuro
   const totalCents = items.reduce((sum, item) => {
-    const price = item.priceCents ?? item.price_cents ?? 0;
+    const price = item.priceCents ?? 0;
     const qty = item.quantity ?? 1;
     return sum + price * qty;
   }, 0);
@@ -33,7 +32,6 @@ export function useCheckout() {
     }
 
     const session = getTableSession();
-    
     const tableCode = session?.tableCode;
     const restaurantSlug = session?.restaurantSlug;
 
@@ -56,30 +54,24 @@ export function useCheckout() {
       const table = await getTableByToken(restaurant.id, tableCode);
       if (!table?.id) throw new Error("Tavolo non trovato o non attivo");
 
-      // 3. Crea ordine
-      const createdOrder = await createOrder({
-        table_id: table.id,
-        restaurant_id: restaurant.id,
-        total_cents: totalCents,
-        status: "pending",
-        notes: "",
-        ordine: items.map((i) => i.name).join(", "),
-      });
+      // 3. Crea o recupera ordine pending
+      const order = await getOrCreatePendingOrder(table.id, restaurant.id);
+      if (!order?.id) throw new Error("Ordine non creato");
 
-      if (!createdOrder?.id) throw new Error("Ordine non creato");
-
-      // 4. Crea order items
-      await createOrderItems(
-        createdOrder.id,
-        items.map((item) => ({
-          menu_item_id: item.menuItemId ?? item.id, // 🔧 Fallback sicuro
-          quantity: item.quantity ?? 1,
-          unit_price_cents: item.priceCents ?? item.price_cents ?? 0,
-          customizations: item.customizations ?? {},
-        }))
+      // 4. Aggiungi ogni item all'ordine
+      await Promise.all(
+        items.map((item) =>
+          addItemToOrder(order.id, {
+            menuItemId: item.menuItemId,
+            name: item.name,
+            priceCents: item.priceCents ?? 0,
+            quantity: item.quantity ?? 1,
+            customizations: item.customizations ?? [],
+          })
+        )
       );
 
-      console.log("✅ Ordine creato con successo", createdOrder.id);
+      console.log("✅ Ordine creato con successo", order.id);
       setStatus("success");
       clearCart();
       setTimeout(() => router.push(`/scan/${tableCode}`), 2500);

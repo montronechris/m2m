@@ -9,7 +9,7 @@ const getSupabase = () => createBrowserClient(supabaseUrl, supabaseKey);
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type UserRole = "admin" | "manager" | "staff";
+export type UserRole = "admin" | "manager" | "staff" | "titolare";
 
 export interface UserProfile {
   id: string;

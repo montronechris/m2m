@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, ArrowLeft, Shield, User, Loader2, AlertCircle } from "lucide-react";
 import { signInWithPassword, getUserProfile, signOut } from "@/lib/auth-service";
@@ -12,7 +12,6 @@ type LoginMode = "staff" | "admin";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [mode, setMode] = useState<LoginMode>("staff");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

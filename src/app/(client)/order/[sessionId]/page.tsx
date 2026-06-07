@@ -10,7 +10,8 @@ import { RestaurantTitle } from "@/components/client/order/RestaurantTitle";
 import { CategoryFilter } from "@/components/client/order/CategoryFilter";
 import { MenuItemCard } from "@/components/client/order/MenuItemCard";
 import { Footer } from "@/components/layout/Footer";
-import { AlertCircle } from "lucide-react";
+import { Navbar } from "@/components/layout/Navbar";
+import { AlertCircle, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getMenuItemOptions, type ModalOption, type CartCustomization } from "@/lib/api-service";
@@ -18,14 +19,14 @@ import { useCartExpiry } from "@/hooks/useCartExpiry";
 import CustomizationModal from "@/components/client/cart/CustomizationModal";
 
 export default function OrderPage() {
-  const params = useParams();
+  const params       = useParams();
   const searchParams = useSearchParams();
-  const sessionId = params.sessionId as string;
-  const initialSlug = searchParams.get("slug") || "cucinadalaghetti";
+  const sessionId    = params.sessionId as string;
+  const initialSlug  = searchParams.get("slug") || "cucinadalaghetti";
 
-  const initFromDB   = useCartStore((s) => s.initFromDB);
-  const addItem      = useCartStore((s) => s.addItem);
-  const cartCount    = useCartStore((s) => s.items.reduce((a, i) => a + i.quantity, 0));
+  const initFromDB = useCartStore((s) => s.initFromDB);
+  const addItem    = useCartStore((s) => s.addItem);
+  const cartCount  = useCartStore((s) => s.items.reduce((a, i) => a + i.quantity, 0));
 
   const { restaurant, tableNumber, categories, items, loading, error, tableId, restaurantId } =
     useOrderSession(sessionId, initialSlug);
@@ -37,22 +38,41 @@ export default function OrderPage() {
 
   const router = useRouter();
 
-  const [expired, setExpired]               = useState(false);
-  const [activeCat, setActiveCat]           = useState("all");
-
-  const { isWarning, secondsLeft, resetTimer } = useCartExpiry(() => {
-    setExpired(true);
-  });
+  const [expired,           setExpired]           = useState(false);
+  const [activeCat,         setActiveCat]         = useState("all");
+  const [isDark,            setIsDark]            = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
-  const [currentItem, setCurrentItem]       = useState<any>(null);
-  const [itemOptions, setItemOptions]       = useState<ModalOption[]>([]);
-  // quale item sta caricando le opzioni (mostra spinner sul suo bottone "+")
-  const [loadingOptionsId, setLoadingOptionsId] = useState<string | null>(null);
+  const [currentItem,       setCurrentItem]       = useState<any>(null);
+  const [itemOptions,       setItemOptions]       = useState<ModalOption[]>([]);
+  const [loadingOptionsId,  setLoadingOptionsId]  = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved       = localStorage.getItem("order-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setIsDark(saved ? saved === "dark" : prefersDark);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    localStorage.setItem("order-theme", next ? "dark" : "light");
+  };
+
+  const { isWarning, secondsLeft } = useCartExpiry(() => setExpired(true));
 
   const cartHref = `/cart/${sessionId}?slug=${searchParams.get("slug")}&table=${searchParams.get("table")}`;
 
-  // ─── AGGIUNTA AL CARRELLO ────────────────────────────────────────────────
+  // ── Palette ───────────────────────────────────────────────────────────────
+  const T = {
+    bg:        isDark ? "#07100d" : "#daf0e7",
+    text:      isDark ? "#d1fae5" : "#052e1c",
+    textMuted: isDark ? "#6ee7b7" : "#065f35",
+    border:    isDark ? "rgba(52,211,153,0.18)" : "rgba(5,150,105,0.2)",
+    bgCard:    isDark ? "rgba(15,35,25,0.9)"    : "rgba(255,255,255,0.82)",
+    grid:      isDark ? "rgba(52,211,153,0.06)" : "rgba(5,150,105,0.10)",
+  };
 
+  // ── HANDLERS ──────────────────────────────────────────────────────────────
   const handleAddToCart = async (item: any) => {
     setLoadingOptionsId(item.id);
     try {
@@ -61,33 +81,19 @@ export default function OrderPage() {
         setCurrentItem(item);
         setItemOptions(options);
         setShowCustomization(true);
-        return; // il finally resetta lo spinner
+        return;
       }
     } catch (err) {
-      console.warn("[OrderPage] Opzioni non disponibili, aggiungo direttamente:", err);
+      console.warn("[OrderPage] Opzioni non disponibili:", err);
     } finally {
       setLoadingOptionsId(null);
     }
-
-    // Nessuna opzione → aggiunta diretta senza personalizzazioni
-    await addItem({
-      menuItemId: item.id,
-      name: item.name,
-      basePriceCents: item.price_cents,
-      customizations: [],
-    });
+    await addItem({ menuItemId: item.id, name: item.name, basePriceCents: item.price_cents, customizations: [] });
   };
-
-  // ─── CONFERMA DAL MODAL ──────────────────────────────────────────────────
 
   const handleCustomizationConfirm = async (customizations: CartCustomization[]) => {
     if (!currentItem) return;
-    await addItem({
-      menuItemId:    currentItem.id,
-      name:          currentItem.name,
-      basePriceCents: currentItem.price_cents,  // centesimi base dal DB
-      customizations,                            // CartCustomization[] con priceModifierCents
-    });
+    await addItem({ menuItemId: currentItem.id, name: currentItem.name, basePriceCents: currentItem.price_cents, customizations });
     setCurrentItem(null);
     setItemOptions([]);
   };
@@ -98,53 +104,153 @@ export default function OrderPage() {
     setItemOptions([]);
   };
 
-  // ─── RENDER ─────────────────────────────────────────────────────────────
-
+  // ── LOADING ───────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-emerald-50/40 via-white to-white">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-500 font-medium">Caricamento menu...</p>
+      <div style={{ minHeight: "100vh", background: T.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ width: 48, height: 48, border: "4px solid #10b981", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 16px" }} />
+          <p style={{ color: T.textMuted, fontWeight: 500 }}>Caricamento menu...</p>
         </div>
       </div>
     );
   }
 
+  // ── ERROR ─────────────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-emerald-50/40 via-white to-white p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center space-y-5 border border-gray-100">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
-          <h2 className="text-2xl font-bold text-gray-900">Accesso Non Consentito</h2>
-          <p className="text-gray-600">{error}</p>
-          <p className="text-sm text-gray-400">Per ordinare, devi scansionare il QR Code presente sul tuo tavolo.</p>
+      <div style={{ minHeight: "100vh", background: T.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+        <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 24, padding: 32, maxWidth: 400, width: "100%", textAlign: "center", backdropFilter: "blur(12px)" }}>
+          <AlertCircle style={{ width: 48, height: 48, color: "#ef4444", margin: "0 auto 16px" }} />
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 8 }}>Accesso Non Consentito</h2>
+          <p style={{ color: T.textMuted, marginBottom: 8 }}>{error}</p>
+          <p style={{ color: T.textMuted, fontSize: 13, marginBottom: 20 }}>Per ordinare, devi scansionare il QR Code presente sul tuo tavolo.</p>
           <Link href="/scan/TAV1-X9Z2">
-            <Button className="w-full bg-gray-900 hover:bg-green-600">Simula Scansione Tavolo 1</Button>
+            <Button style={{ width: "100%", background: "#064e3b", color: "#fff" }}>Simula Scansione Tavolo 1</Button>
           </Link>
         </div>
       </div>
     );
   }
 
-  const filteredItems =
-    activeCat === "all" ? items : items.filter((i) => i.category_id === activeCat);
+  const filteredItems = activeCat === "all" ? items : items.filter((i) => i.category_id === activeCat);
 
+  // ── RENDER ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 via-white to-white font-sans text-gray-900 relative">
-      <div
-        className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-      />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-r from-green-200/20 to-emerald-200/20 rounded-full blur-[100px] -z-0 pointer-events-none" />
+    <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "system-ui, sans-serif", position: "relative", overflowX: "hidden" }}>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-40px) scale(1.06); } }
+        @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-25px,35px) scale(1.04); } }
+        @keyframes floatC { 0%,100% { transform: translate(-50%,-50%) scale(1); } 50% { transform: translate(-50%,-50%) scale(1.08); } }
+      `}</style>
 
-      <div className="relative z-10">
+      {/* ── Griglia ── */}
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+        backgroundImage: `linear-gradient(${T.grid} 1px, transparent 1px), linear-gradient(90deg, ${T.grid} 1px, transparent 1px)`,
+        backgroundSize: "48px 48px",
+      }} />
+
+      {/* ── Blob 1: alto-sinistra, grande, animato ── */}
+      <div style={{
+        position: "fixed", zIndex: 0, pointerEvents: "none",
+        top: -180, left: -200, width: 750, height: 750,
+        borderRadius: "50%", filter: "blur(60px)",
+        animation: "floatA 12s ease-in-out infinite",
+        background: isDark
+          ? "radial-gradient(circle, rgba(6,95,70,0.75) 0%, rgba(4,60,44,0.3) 55%, transparent 100%)"
+          : "radial-gradient(circle, rgba(34,197,94,0.38) 0%, rgba(16,185,129,0.18) 55%, transparent 100%)",
+      }} />
+
+      {/* ── Blob 2: basso-destra, animato ── */}
+      <div style={{
+        position: "fixed", zIndex: 0, pointerEvents: "none",
+        bottom: -150, right: -150, width: 650, height: 650,
+        borderRadius: "50%", filter: "blur(55px)",
+        animation: "floatB 15s ease-in-out infinite",
+        background: isDark
+          ? "radial-gradient(circle, rgba(5,150,105,0.55) 0%, rgba(4,120,87,0.2) 55%, transparent 100%)"
+          : "radial-gradient(circle, rgba(5,150,105,0.35) 0%, rgba(16,185,129,0.12) 55%, transparent 100%)",
+      }} />
+
+      {/* ── Blob 3: centro, più saturo ── */}
+      <div style={{
+        position: "fixed", zIndex: 0, pointerEvents: "none",
+        top: "42%", left: "50%", transform: "translate(-50%,-50%)",
+        width: 800, height: 500,
+        borderRadius: "50%", filter: "blur(80px)",
+        animation: "floatC 18s ease-in-out infinite",
+        background: isDark
+          ? "radial-gradient(ellipse, rgba(6,78,59,0.5) 0%, transparent 70%)"
+          : "radial-gradient(ellipse, rgba(134,239,172,0.45) 0%, transparent 70%)",
+      }} />
+
+      {/* ── Blob 4: alto-destra, piccolo accentuato ── */}
+      <div style={{
+        position: "fixed", zIndex: 0, pointerEvents: "none",
+        top: "5%", right: "-80px", width: 400, height: 400,
+        borderRadius: "50%", filter: "blur(50px)",
+        background: isDark
+          ? "radial-gradient(circle, rgba(4,120,87,0.4) 0%, transparent 70%)"
+          : "radial-gradient(circle, rgba(52,211,153,0.3) 0%, transparent 70%)",
+      }} />
+
+      {/* ── Vignette bordi (dà profondità) ── */}
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+        background: isDark
+          ? "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%)"
+          : "radial-gradient(ellipse at center, transparent 40%, rgba(3,70,40,0.18) 100%)",
+      }} />
+
+      {/* ── Cerchi decorativi ── */}
+      {[
+        { top: "8%",  right: "4%",  size: 360, opacity: isDark ? 0.10 : 0.13, stroke: 2 },
+        { top: "11%", right: "7%",  size: 230, opacity: isDark ? 0.07 : 0.09, stroke: 1 },
+        { bottom: "13%", left: "2%", size: 300, opacity: isDark ? 0.09 : 0.12, stroke: 2 },
+        { bottom: "16%", left: "5%", size: 170, opacity: isDark ? 0.06 : 0.08, stroke: 1 },
+      ].map((c, i) => (
+        <div key={i} style={{
+          position: "fixed", zIndex: 0, pointerEvents: "none",
+          top: c.top, bottom: c.bottom, right: c.right, left: c.left,
+          width: c.size, height: c.size, borderRadius: "50%",
+          border: `${c.stroke}px solid ${isDark ? `rgba(52,211,153,${c.opacity})` : `rgba(5,150,105,${c.opacity})`}`,
+        }} />
+      ))}
+
+      {/* ── NAVBAR ── */}
+      <Navbar tableNumber={tableNumber} sessionId={sessionId} />
+
+      {/* ── Toggle dark mode ── */}
+      <button
+        onClick={toggleTheme}
+        aria-label="Cambia tema"
+        style={{
+          position: "fixed", top: 22, right: 80, zIndex: 60,
+          width: 36, height: 36, borderRadius: "50%",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: isDark ? "rgba(6,78,59,0.8)" : "rgba(187,247,208,0.9)",
+          border: `1px solid ${T.border}`, cursor: "pointer",
+          backdropFilter: "blur(8px)", transition: "all 0.3s ease",
+          boxShadow: isDark ? "0 2px 12px rgba(52,211,153,0.2)" : "0 2px 12px rgba(5,150,105,0.2)",
+        }}
+      >
+        {isDark
+          ? <Sun  style={{ width: 16, height: 16, color: "#6ee7b7" }} />
+          : <Moon style={{ width: 16, height: 16, color: "#047857" }} />
+        }
+      </button>
+
+      {/* ── CONTENUTO ── */}
+      <div style={{ position: "relative", zIndex: 10, paddingTop: 80 }}>
         <OrderHeader cartCount={cartCount} cartHref={cartHref} />
         <RestaurantTitle name={restaurant?.name || "Ristorante"} tableNumber={tableNumber} />
 
-        <main className="max-w-4xl mx-auto px-4 pb-12">
-          <div className="text-center mb-8">
-            <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">
+        <main style={{ maxWidth: 896, margin: "0 auto", padding: "0 16px 48px" }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <p style={{ fontSize: 18, lineHeight: 1.7, maxWidth: 560, margin: "0 auto", color: T.textMuted }}>
               Scegli tra i nostri piatti preparati con passione. Ingredienti freschi, ricette
               tradizionali e servizio veloce direttamente al tuo tavolo.
             </p>
@@ -152,7 +258,7 @@ export default function OrderPage() {
 
           <CategoryFilter categories={categories} activeCat={activeCat} onCategoryChange={setActiveCat} />
 
-          <div className="grid gap-4 mt-6">
+          <div style={{ display: "grid", gap: 16, marginTop: 24 }}>
             {filteredItems.map((item) => (
               <MenuItemCard
                 key={item.id}
@@ -162,8 +268,8 @@ export default function OrderPage() {
               />
             ))}
             {filteredItems.length === 0 && (
-              <div className="text-center py-12 text-gray-400">
-                <p className="text-lg">Nessun piatto disponibile in questa categoria.</p>
+              <div style={{ textAlign: "center", padding: "48px 0", color: T.textMuted }}>
+                <p style={{ fontSize: 18 }}>Nessun piatto disponibile in questa categoria.</p>
               </div>
             )}
           </div>
@@ -172,36 +278,33 @@ export default function OrderPage() {
         <Footer />
       </div>
 
-      {/* ── Overlay scadenza sessione ─────────────────────────────────── */}
+      {/* ── Overlay sessione scaduta ── */}
       {expired && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full text-center p-8 space-y-5">
-            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-3xl">⏱</span>
+        <div style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)", padding: 16 }}>
+          <div style={{ background: T.bgCard, borderRadius: 24, backdropFilter: "blur(16px)", border: `1px solid ${T.border}`, maxWidth: 360, width: "100%", textAlign: "center", padding: 32 }}>
+            <div style={{ width: 64, height: 64, borderRadius: "50%", background: isDark ? "rgba(239,68,68,0.15)" : "#fef2f2", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <span style={{ fontSize: 28 }}>⏱</span>
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Sessione scaduta</h2>
-            <p className="text-gray-500 text-sm leading-relaxed">
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: T.text, marginBottom: 8 }}>Sessione scaduta</h2>
+            <p style={{ color: T.textMuted, fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
               Il carrello è stato eliminato per inattività.<br />
               Scansiona di nuovo il QR Code per ordinare.
             </p>
-            <button
-              onClick={() => router.push("/")}
-              className="w-full py-3 bg-gray-900 hover:bg-green-600 text-white rounded-xl font-semibold transition-all"
-            >
+            <button onClick={() => router.push("/")} style={{ width: "100%", padding: "12px 0", borderRadius: 12, background: "#064e3b", color: "#fff", fontWeight: 600, fontSize: 15, border: "none", cursor: "pointer" }}>
               Torna alla home
             </button>
           </div>
         </div>
       )}
 
-      {/* ── Warning 2 minuti alla scadenza ──────────────────────────────── */}
+      {/* ── Warning scadenza ── */}
       {isWarning && !expired && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-          <div className="bg-orange-500 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-medium">
-            <span className="text-lg">⚠️</span>
+        <div style={{ position: "fixed", bottom: 96, left: "50%", transform: "translateX(-50%)", zIndex: 50, pointerEvents: "none" }}>
+          <div style={{ background: "#f97316", color: "#fff", padding: "12px 20px", borderRadius: 16, boxShadow: "0 8px 32px rgba(249,115,22,0.4)", display: "flex", alignItems: "center", gap: 12, fontSize: 14, fontWeight: 500 }}>
+            <span style={{ fontSize: 18 }}>⚠️</span>
             <span>
               Sessione in scadenza —{" "}
-              <span className="font-bold tabular-nums">
+              <span style={{ fontWeight: 700 }}>
                 {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, "0")}
               </span>
             </span>
@@ -209,7 +312,7 @@ export default function OrderPage() {
         </div>
       )}
 
-      {/* Modal personalizzazione — itemName mostra il nome del piatto nell'header */}
+      {/* ── Modal personalizzazione ── */}
       <CustomizationModal
         isOpen={showCustomization}
         itemName={currentItem?.name ?? ""}

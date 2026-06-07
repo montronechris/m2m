@@ -1,10 +1,39 @@
-import { createClient } from "@supabase/supabase-js";
+// src/app/api/admin/menu/[id]/route.ts
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+// ✅ In Next.js 15+, params è una Promise — va sempre awaited
+export async function DELETE(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-    const { error } = await supabase.from("menu_categories").delete().eq("id", params.id);
+    const { id } = await params;
+
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          },
+        },
+      }
+    );
+
+    const { error } = await supabase
+      .from("menu_categories")
+      .delete()
+      .eq("id", id);
+
     if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (e: any) {

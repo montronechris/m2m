@@ -40,7 +40,7 @@ export const db = {
     // Per sicurezza, forziamo l'ID del ristorante che ci hai dato.
     const TARGET_RESTAURANT_ID = "65bd3c11-e961-4421-9f40-cf0c3cfc6e73";
 
-    const {  order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
         table_id: orderData.table_id,

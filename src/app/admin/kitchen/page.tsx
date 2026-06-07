@@ -2,10 +2,15 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import {
   Clock, ChefHat, CheckCircle, AlertCircle,
   Loader2, Trash2, StickyNote, Utensils, Bell,
+  LayoutDashboard, ShoppingCart, QrCode, BarChart3,
+  Users, Palette, Settings, ChevronLeft, ChevronRight,
+  Sun, Moon,
 } from "lucide-react";
 
 const supabase = createBrowserClient(
@@ -34,7 +39,7 @@ type OrderItem = {
 type Order = {
   id:            string;
   table_id:      string | null;
-  status:        "pending" | "cooking" | "ready" | "completed";
+  status:        "confirmed" | "pending" | "cooking" | "ready" | "completed";
   total_cents:   number;
   notes:         string | null;
   created_at:    string;
@@ -68,6 +73,31 @@ export default function KitchenDashboard() {
   const [updating, setUpdating] = useState<string | null>(null);
   const [error,    setError]    = useState<string | null>(null);
   const [tick,     setTick]     = useState(0); // forza re-render ogni minuto per elapsed
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [theme, setTheme] = useState<"dark"|"light">("dark");
+  const router = useRouter();
+
+  const navItems = [
+    { id: "dashboard", label: "Dashboard",    icon: LayoutDashboard, href: "/admin/dashboard" },
+    { id: "menu",      label: "Menu",          icon: Utensils,        href: "/admin/dashboard" },
+    { id: "orders",    label: "Ordini",        icon: ShoppingCart,    href: "/admin/kitchen"   },
+    { id: "tables",    label: "Tavoli",        icon: QrCode,          href: "/admin/dashboard" },
+    { id: "analytics", label: "Analytics",    icon: BarChart3,       href: "/admin/dashboard" },
+    { id: "staff",     label: "Staff",        icon: Users,           href: "/admin/dashboard" },
+    { id: "branding",  label: "Branding",     icon: Palette,         href: "/admin/dashboard" },
+    { id: "settings",  label: "Impostazioni", icon: Settings,        href: "/admin/dashboard" },
+  ];
+
+  useEffect(() => {
+    const saved = localStorage.getItem("admin-theme") as "dark"|"light"|null;
+    if (saved) setTheme(saved);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("admin-theme", next);
+  };
 
   // ── FETCH ───────────────────────────────────────────────────────────────────
   const fetchOrders = useCallback(async () => {
@@ -184,6 +214,16 @@ export default function KitchenDashboard() {
     setOrders((prev) => prev.filter((o) => o.id !== orderId));
   };
 
+  // ── TEMA ────────────────────────────────────────────────────────────────────
+  const isDark = theme === "dark";
+  const bg          = isDark ? "bg-gray-950"      : "bg-gray-50";
+  const bgSidebar   = isDark ? "bg-gray-900"      : "bg-white";
+  const bgHeader    = isDark ? "bg-gray-950/90"   : "bg-white/90";
+  const borderColor = isDark ? "border-white/10"  : "border-gray-200";
+  const textPrimary = isDark ? "text-white"        : "text-gray-900";
+  const textSecond  = isDark ? "text-gray-400"    : "text-gray-500";
+  const cardBg      = isDark ? "bg-gray-900"      : "bg-white";
+
   // ── PARTIALS ────────────────────────────────────────────────────────────────
   const pending = orders.filter((o) => o.status === "confirmed");
   const cooking = orders.filter((o) => o.status === "cooking");
@@ -191,20 +231,64 @@ export default function KitchenDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className={`min-h-screen ${bg} flex items-center justify-center`}>
         <div className="text-center space-y-3">
           <Loader2 className="w-10 h-10 animate-spin text-green-400 mx-auto" />
-          <p className="text-gray-400 text-sm">Caricamento cucina...</p>
+          <p className={`${textSecond} text-sm`}>Caricamento cucina...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className={`min-h-screen ${bg} ${textPrimary} flex`}>
 
-      {/* ── TOP BAR ──────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-gray-950/90 backdrop-blur border-b border-white/10 px-6 py-4 flex items-center justify-between">
+      <aside className={`${bgSidebar} border-r ${borderColor} flex flex-col transition-all duration-300 ${sidebarCollapsed ? "w-16" : "w-56"} shrink-0 sticky top-0 h-screen`}>
+        <div className={`flex items-center gap-3 px-4 py-5 border-b ${borderColor}`}>
+          <div className="w-9 h-9 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <ChefHat className="w-5 h-5 text-green-400" />
+          </div>
+          {!sidebarCollapsed && <span className="font-bold text-sm">TavolaRapida</span>}
+        </div>
+
+        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+          {navItems.map(item => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group
+                ${item.id === "orders"
+                  ? "bg-green-500/15 text-green-400 border border-green-500/20"
+                  : `${textSecond} hover:${textPrimary} ${isDark ? "hover:bg-white/5" : "hover:bg-gray-100"}`}
+                ${sidebarCollapsed ? "justify-center" : ""}`}
+            >
+              <item.icon className="w-5 h-5 shrink-0" />
+              {!sidebarCollapsed && <span className="text-sm font-medium">{item.label}</span>}
+            </Link>
+          ))}
+        </nav>
+
+        <div className={`px-2 py-3 border-t ${borderColor} space-y-1`}>
+          <button
+            onClick={toggleTheme}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl ${textSecond} ${isDark ? "hover:bg-white/5" : "hover:bg-gray-100"} transition-all ${sidebarCollapsed ? "justify-center" : ""}`}
+          >
+            {isDark ? <Sun className="w-5 h-5 shrink-0" /> : <Moon className="w-5 h-5 shrink-0" />}
+            {!sidebarCollapsed && <span className="text-sm font-medium">{isDark ? "Tema Chiaro" : "Tema Scuro"}</span>}
+          </button>
+          <button
+            onClick={() => setSidebarCollapsed(p => !p)}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl ${textSecond} ${isDark ? "hover:bg-white/5" : "hover:bg-gray-100"} transition-all ${sidebarCollapsed ? "justify-center" : ""}`}
+          >
+            {sidebarCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            {!sidebarCollapsed && <span className="text-sm font-medium">Comprimi</span>}
+          </button>
+        </div>
+      </aside>
+
+      <div className="flex-1 flex flex-col min-w-0">
+
+      <header className={`sticky top-0 z-30 ${bgHeader} backdrop-blur border-b ${borderColor} px-6 py-4 flex items-center justify-between`}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
             <ChefHat className="w-6 h-6 text-green-400" />
@@ -215,7 +299,6 @@ export default function KitchenDashboard() {
           </div>
         </div>
 
-        {/* Stats pills */}
         <div className="flex items-center gap-3">
           <StatPill color="yellow" count={pending.length} label="Attesa" />
           <StatPill color="blue"   count={cooking.length} label="Cucina" />
@@ -230,7 +313,6 @@ export default function KitchenDashboard() {
         </div>
       </header>
 
-      {/* ── ERROR ────────────────────────────────────────────────────────────── */}
       {error && (
         <div className="mx-6 mt-4 bg-red-500/15 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl flex items-center gap-2 text-sm">
           <AlertCircle className="w-4 h-4 shrink-0" />
@@ -238,7 +320,6 @@ export default function KitchenDashboard() {
         </div>
       )}
 
-      {/* ── COLUMNS ──────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-0 lg:divide-x divide-white/10 p-0">
 
         <Column
@@ -299,7 +380,8 @@ export default function KitchenDashboard() {
         </Column>
 
       </div>
-    </div>
+      </div>  
+    </div>  
   );
 }
 
@@ -327,7 +409,6 @@ function Column({
 }) {
   return (
     <div className="flex flex-col min-h-[calc(100vh-73px)]">
-      {/* Column header */}
       <div className={`px-5 py-4 border-b border-white/10 flex items-center gap-2`}>
         <span className={colorClass}>{icon}</span>
         <span className={`text-sm font-semibold uppercase tracking-wider ${colorClass}`}>
@@ -338,7 +419,6 @@ function Column({
         </span>
       </div>
 
-      {/* Cards */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto">
         {count === 0 ? (
           <div className="text-center py-16 text-gray-600">
@@ -365,22 +445,20 @@ function OrderCard({
   const isUrgent = elapsed >= 10; // ≥10 minuti → bordo rosso
 
   return (
+    <div>
     <div className={`bg-gray-900 rounded-2xl border overflow-hidden transition-all ${
       isUrgent ? "border-red-500/50 shadow-red-500/10 shadow-lg" : "border-white/10"
-    }`}>
+      }`}>
 
-      {/* Card header */}
       <div className={`flex items-center justify-between px-4 py-3 border-b border-white/10 ${
-        order.status === "pending" ? "bg-yellow-500/10"
+        (order.status === "confirmed" || order.status === "pending") ? "bg-yellow-500/10"
         : order.status === "cooking" ? "bg-blue-500/10"
         : "bg-green-500/10"
       }`}>
         <div className="flex items-center gap-2">
-          {/* Numero tavolo */}
           <span className="bg-white/15 text-white font-bold px-3 py-1 rounded-lg text-sm tracking-wide">
             {order.table_number ? `TAV ${order.table_number}` : "TAV —"}
           </span>
-          {/* Elapsed — rosso se urgente */}
           <span className={`text-xs font-semibold flex items-center gap-1 ${isUrgent ? "text-red-400" : "text-gray-400"}`}>
             <Clock className="w-3 h-3" />
             {formatElapsed(displayTime)}
@@ -388,18 +466,15 @@ function OrderCard({
           </span>
         </div>
 
-        {/* Prezzo totale */}
         <span className="text-sm font-bold text-white/70">€{formatPrice(order.total_cents)}</span>
       </div>
 
-      {/* Items */}
       <div className="px-4 py-3 space-y-3">
         {order.items.length === 0 ? (
           <p className="text-xs text-gray-500 italic">Nessun prodotto</p>
         ) : (
           order.items.map((item) => (
             <div key={item.id} className="space-y-1.5">
-              {/* Nome + quantità */}
               <div className="flex items-baseline gap-2">
                 <span className="text-green-400 font-bold text-sm tabular-nums min-w-[24px]">
                   {item.quantity}×
@@ -407,7 +482,6 @@ function OrderCard({
                 <span className="text-white font-semibold text-sm">{item.name}</span>
               </div>
 
-              {/* Customizations */}
               {item.customizations.length > 0 && (
                 <div className="ml-7 flex flex-wrap gap-1.5">
                   {item.customizations.map((c, i) => (
@@ -427,7 +501,6 @@ function OrderCard({
                 </div>
               )}
 
-              {/* Nota libera */}
               {item.note && (
                 <div className="ml-7 flex items-start gap-1.5 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5">
                   <StickyNote className="w-3 h-3 shrink-0 mt-0.5" />
@@ -438,7 +511,6 @@ function OrderCard({
           ))
         )}
 
-        {/* Note ordine (campo globale) */}
         {order.notes && (
           <div className="mt-2 flex items-start gap-1.5 text-xs text-gray-400 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
             <Bell className="w-3 h-3 shrink-0 mt-0.5 text-gray-500" />
@@ -447,9 +519,8 @@ function OrderCard({
         )}
       </div>
 
-      {/* Actions */}
       <div className="px-4 pb-4 flex gap-2">
-        {order.status === "pending" && (
+        {(order.status === "confirmed" || order.status === "pending") && (
           <>
             <button
               onClick={() => onUpdate(order.id, "cooking")}
@@ -498,6 +569,7 @@ function OrderCard({
             Completato — Consegnato
           </button>
         )}
+      </div>
       </div>
     </div>
   );

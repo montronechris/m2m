@@ -52,7 +52,7 @@ export default function RegisterStaffPage() {
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        inviteCode: formData.inviteCode.trim(),
+        secretCode: formData.inviteCode.trim(),
       });
 
       setStatus("success");
